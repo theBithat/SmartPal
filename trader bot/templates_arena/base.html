@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SmartPal Arena{% endblock %}</title>
+    
+    <!-- Tailwind CSS (Production Build) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #0a0a0f 100%);
+            min-height: 100vh;
+        }
+        
+        .font-display {
+            font-family: 'Cinzel', serif;
+        }
+        
+        /* Gold gradient text */
+        .text-gold-gradient {
+            background: linear-gradient(135deg, #ffd700 0%, #ffec8b 50%, #ffd700 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Glowing effects */
+        .glow-gold {
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+        
+        .glow-purple {
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+        }
+        
+        /* Cards */
+        .arena-card {
+            background: linear-gradient(135deg, rgba(26, 26, 46, 0.9) 0%, rgba(10, 10, 15, 0.9) 100%);
+            border: 1px solid rgba(255, 215, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .arena-card:hover {
+            border-color: rgba(255, 215, 0, 0.3);
+        }
+        
+        /* Buttons */
+        .btn-arena {
+            background: linear-gradient(135deg, #ffd700 0%, #f0a500 100%);
+            color: #0a0a0f;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-arena:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            color: #ffd700;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 215, 0, 0.1);
+        }
+        
+        /* God avatars */
+        .god-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid #ffd700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+        
+        /* Tier badges */
+        .tier-sparta {
+            background: linear-gradient(135deg, #8b4513 0%, #cd7f32 100%);
+        }
+        
+        .tier-titan {
+            background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
+            color: #333;
+        }
+        
+        .tier-kratos {
+            background: linear-gradient(135deg, #ffd700 0%, #ffec8b 100%);
+            color: #333;
+        }
+        
+        /* Animations */
+        @keyframes pulse-gold {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.6); }
+        }
+        
+        .animate-pulse-gold {
+            animation: pulse-gold 2s infinite;
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #0a0a0f;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #ffd700;
+            border-radius: 4px;
+        }
+    </style>
+    
+    {% block head %}{% endblock %}
+</head>
+<body class="text-white">
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-arena-darker/80 backdrop-blur-md border-b border-arena-gold/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <a href="/arena" class="flex items-center space-x-3">
+                    <span class="text-3xl">⚔️</span>
+                    <span class="font-display text-xl font-bold text-gold-gradient">SmartPal Arena</span>
+                </a>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-6">
+                    {% if user %}
+                    <a href="/arena/dashboard" class="text-gray-300 hover:text-arena-gold transition">Dashboard</a>
+                    <a href="/arena/gods" class="text-gray-300 hover:text-arena-gold transition">Gods</a>
+                    <a href="/arena/strategists" class="text-gray-300 hover:text-arena-gold transition">Strategists</a>
+                    <a href="/arena/leaderboard" class="text-gray-300 hover:text-arena-gold transition">Leaderboard</a>
+                    
+                    <!-- User Menu -->
+                    <div class="relative group">
+                        <button class="flex items-center space-x-2 text-gray-300 hover:text-arena-gold">
+                            <span class="w-8 h-8 rounded-full bg-arena-gold/20 flex items-center justify-center">
+                                <i class="fas fa-user"></i>
+                            </span>
+                            <span>{{ user.username }}</span>
+                            <span class="px-2 py-0.5 text-xs rounded tier-{{ user.tier }}">{{ user.tier|upper }}</span>
+                        </button>
+                        <div class="absolute right-0 mt-2 w-48 arena-card rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+                            <a href="/arena/profile" class="block px-4 py-2 text-gray-300 hover:text-arena-gold hover:bg-white/5">Profile</a>
+                            <a href="/arena/subscription" class="block px-4 py-2 text-gray-300 hover:text-arena-gold hover:bg-white/5">Subscription</a>
+                            <hr class="border-arena-gold/10 my-1">
+                            <a href="/arena/logout" class="block px-4 py-2 text-arena-red hover:bg-white/5">Logout</a>
+                        </div>
+                    </div>
+                    {% else %}
+                    <a href="/arena/login" class="text-gray-300 hover:text-arena-gold transition">Login</a>
+                    <a href="/arena/register" class="btn-arena">Join the Arena</a>
+                    {% endif %}
+                </div>
+                
+                <!-- Mobile menu button -->
+                <button class="md:hidden text-gray-300 hover:text-arena-gold" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-arena-darker border-t border-arena-gold/20">
+            <div class="px-4 py-3 space-y-2">
+                {% if user %}
+                <a href="/arena/dashboard" class="block py-2 text-gray-300 hover:text-arena-gold">Dashboard</a>
+                <a href="/arena/gods" class="block py-2 text-gray-300 hover:text-arena-gold">Gods</a>
+                <a href="/arena/strategists" class="block py-2 text-gray-300 hover:text-arena-gold">Strategists</a>
+                <a href="/arena/profile" class="block py-2 text-gray-300 hover:text-arena-gold">Profile</a>
+                <a href="/arena/logout" class="block py-2 text-arena-red">Logout</a>
+                {% else %}
+                <a href="/arena/login" class="block py-2 text-gray-300 hover:text-arena-gold">Login</a>
+                <a href="/arena/register" class="block py-2 text-arena-gold">Join the Arena</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main class="pt-16">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Footer -->
+    <footer class="bg-arena-darker/80 border-t border-arena-gold/20 py-8 mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <span class="text-2xl">⚔️</span>
+                        <span class="font-display text-lg font-bold text-gold-gradient">SmartPal Arena</span>
+                    </div>
+                    <p class="text-gray-400 text-sm">AI-powered trading where gods battle for supremacy.</p>
+                </div>
+                <div>
+                    <h4 class="font-display text-arena-gold mb-4">Platform</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="/arena/gods" class="hover:text-arena-gold">Gods</a></li>
+                        <li><a href="/arena/strategists" class="hover:text-arena-gold">Strategists</a></li>
+                        <li><a href="/arena/leaderboard" class="hover:text-arena-gold">Leaderboard</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-display text-arena-gold mb-4">Subscription</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="/arena/subscription" class="hover:text-arena-gold">Pricing</a></li>
+                        <li><a href="/arena/subscription#sparta" class="hover:text-arena-gold">Sparta (Free)</a></li>
+                        <li><a href="/arena/subscription#titan" class="hover:text-arena-gold">Titan</a></li>
+                        <li><a href="/arena/subscription#kratos" class="hover:text-arena-gold">Kratos</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-display text-arena-gold mb-4">Support</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="#" class="hover:text-arena-gold">Documentation</a></li>
+                        <li><a href="#" class="hover:text-arena-gold">Contact</a></li>
+                        <li><a href="#" class="hover:text-arena-gold">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-arena-gold/10 text-center text-gray-500 text-sm">
+                © 2025 SmartPal Arena. Trade with the power of gods.
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+        
+        // API helper
+        const API = {
+            token: localStorage.getItem('arena_token'),
+            
+            async fetch(url, options = {}) {
+                const headers = {
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                };
+                
+                if (this.token) {
+                    headers['Authorization'] = `Bearer ${this.token}`;
+                }
+                
+                const response = await fetch(url, { ...options, headers });
+                return response.json();
+            },
+            
+            get(url) {
+                return this.fetch(url);
+            },
+            
+            post(url, data) {
+                return this.fetch(url, {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+            },
+            
+            put(url, data) {
+                return this.fetch(url, {
+                    method: 'PUT',
+                    body: JSON.stringify(data)
+                });
+            },
+            
+            delete(url) {
+                return this.fetch(url, { method: 'DELETE' });
+            }
+        };
+        
+        // Login handler
+        async function handleLogin(username, password) {
+            const result = await API.post('/api/arena/auth/login', { username, password });
+            if (result.success) {
+                localStorage.setItem('arena_token', result.access_token);
+                localStorage.setItem('arena_refresh', result.refresh_token);
+                API.token = result.access_token;
+                window.location.href = '/arena/dashboard';
+            }
+            return result;
+        }
+        
+        // Logout
+        function logout() {
+            localStorage.removeItem('arena_token');
+            localStorage.removeItem('arena_refresh');
+            window.location.href = '/arena/login';
+        }
+    </script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>
