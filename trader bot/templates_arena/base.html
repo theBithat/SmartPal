@@ -146,7 +146,7 @@
                 <!-- Desktop Menu -->
                 <div class="hidden md:flex items-center space-x-6">
                     {% if user %}
-                    <a href="/arena/dashboard" class="text-gray-300 hover:text-arena-gold transition">Dashboard</a>
+                    <a href="/arena/god-control" class="text-gray-300 hover:text-arena-gold transition">Dashboard</a>
                     <a href="/arena/gods" class="text-gray-300 hover:text-arena-gold transition">Gods</a>
                     <a href="/arena/strategists" class="text-gray-300 hover:text-arena-gold transition">Strategists</a>
                     <a href="/arena/leaderboard" class="text-gray-300 hover:text-arena-gold transition">Leaderboard</a>
@@ -184,7 +184,7 @@
         <div id="mobile-menu" class="hidden md:hidden bg-arena-darker border-t border-arena-gold/20">
             <div class="px-4 py-3 space-y-2">
                 {% if user %}
-                <a href="/arena/dashboard" class="block py-2 text-gray-300 hover:text-arena-gold">Dashboard</a>
+                <a href="/arena/god-control" class="block py-2 text-gray-300 hover:text-arena-gold">Dashboard</a>
                 <a href="/arena/gods" class="block py-2 text-gray-300 hover:text-arena-gold">Gods</a>
                 <a href="/arena/strategists" class="block py-2 text-gray-300 hover:text-arena-gold">Strategists</a>
                 <a href="/arena/profile" class="block py-2 text-gray-300 hover:text-arena-gold">Profile</a>
@@ -299,7 +299,13 @@
                 localStorage.setItem('arena_token', result.access_token);
                 localStorage.setItem('arena_refresh', result.refresh_token);
                 API.token = result.access_token;
-                window.location.href = '/arena/dashboard';
+                
+                // Check onboarding status and redirect appropriately
+                if (result.onboarding_completed === false) {
+                    window.location.href = '/arena/onboarding';
+                } else {
+                    window.location.href = '/arena/god-control';
+                }
             }
             return result;
         }
