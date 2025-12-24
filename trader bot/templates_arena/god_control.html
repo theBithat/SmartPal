@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>God Control - Arena</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
+            font-family: 'Inter', sans-serif;
+            color: #e0e0e0;
+        }
+        .gold-gradient {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+        }
+        .card-dark {
+            background: rgba(20, 20, 30, 0.8);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        .god-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .god-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 215, 0, 0.6);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+        }
+        .god-card.selected {
+            border-color: #ffd700;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+        }
+        .status-active {
+            color: #4ade80;
+        }
+        .status-inactive {
+            color: #94a3b8;
+        }
+        .status-paused {
+            color: #fbbf24;
+        }
+        .regime-cell {
+            min-height: 80px;
+            transition: all 0.2s ease;
+        }
+        .regime-cell:hover {
+            background: rgba(255, 215, 0, 0.1);
+        }
+        .strategist-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            background: rgba(255, 215, 0, 0.2);
+            border: 1px solid rgba(255, 215, 0, 0.4);
+        }
+        .pnl-positive {
+            color: #4ade80;
+        }
+        .pnl-negative {
+            color: #ef4444;
+        }
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            z-index: 9999;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .toast.success {
+            background: #4ade80;
+            color: #0a0a0f;
+        }
+        .toast.error {
+            background: #ef4444;
+            color: white;
+        }
+        .spinner {
+            border: 3px solid rgba(255, 215, 0, 0.3);
+            border-top: 3px solid #ffd700;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .stat-box {
+            background: rgba(255, 215, 0, 0.1);
+            border-left: 3px solid #ffd700;
+            padding: 12px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Toast notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Header -->
+    <header class="card-dark p-4 mb-6">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <h1 class="text-3xl font-bold gold-gradient bg-clip-text text-transparent">⚡ God Control</h1>
+                <span class="px-3 py-1 rounded-full text-xs font-semibold gold-gradient text-gray-900">SPARTA TIER</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span class="text-sm text-gray-400">Last updated: <span id="lastUpdate">--:--</span></span>
+                <button onclick="refreshData()" class="px-4 py-2 rounded-lg border border-yellow-500 hover:bg-yellow-500 hover:text-gray-900 transition">
+                    <i class="fas fa-sync-alt mr-2"></i>Refresh
+                </button>
+                <a href="/arena/settings/environment" class="px-4 py-2 rounded-lg border border-yellow-500 hover:bg-yellow-500 hover:text-gray-900 transition">
+                    <i class="fas fa-cog mr-2"></i>Settings
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 pb-8">
+        <!-- 3-Column Layout -->
+        <div class="grid grid-cols-12 gap-6">
+            
+            <!-- LEFT COLUMN: Gods List (3 cols) -->
+            <div class="col-span-3">
+                <div class="card-dark p-4 rounded-lg h-full">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold text-yellow-500">
+                            <i class="fas fa-bolt mr-2"></i>Your Gods
+                        </h2>
+                        <button class="text-gray-400 hover:text-yellow-500" disabled title="Upgrade to Kratos tier">
+                            <i class="fas fa-plus-circle text-2xl"></i>
+                        </button>
+                    </div>
+                    
+                    <div id="godsList" class="space-y-3">
+                        <div class="flex justify-center items-center py-12">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CENTER COLUMN: Regime-Strategist Matrix (6 cols) -->
+            <div class="col-span-6">
+                <div class="card-dark p-4 rounded-lg h-full">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold text-yellow-500">
+                            <i class="fas fa-chess-board mr-2"></i>Regime & Strategists
+                        </h2>
+                        <div class="text-sm text-gray-400">
+                            Current Market: <span id="currentMarket" class="text-white font-semibold">Detecting...</span>
+                        </div>
+                    </div>
+
+                    <div id="regimeMatrix">
+                        <div class="text-center text-gray-500 py-12">
+                            Select a God to view regime and strategists
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: Quick Stats & Actions (3 cols) -->
+            <div class="col-span-3">
+                <div class="space-y-4">
+                    
+                    <!-- Quick Stats Card -->
+                    <div class="card-dark p-4 rounded-lg">
+                        <h3 class="text-lg font-bold text-yellow-500 mb-3">
+                            <i class="fas fa-chart-line mr-2"></i>Quick Stats
+                        </h3>
+                        
+                        <div class="space-y-3">
+                            <div class="stat-box">
+                                <div class="text-xs text-gray-400 mb-1">Total Capital</div>
+                                <div class="text-xl font-bold">$<span id="totalCapital">0.00</span></div>
+                            </div>
+                            
+                            <div class="stat-box">
+                                <div class="text-xs text-gray-400 mb-1">Total P&L</div>
+                                <div id="totalPnl" class="text-xl font-bold">$0.00</div>
+                            </div>
+                            
+                            <div class="stat-box">
+                                <div class="text-xs text-gray-400 mb-1">Active Positions</div>
+                                <div class="text-xl font-bold"><span id="activePositions">0</span></div>
+                            </div>
+                            
+                            <div class="stat-box">
+                                <div class="text-xs text-gray-400 mb-1">Win Rate</div>
+                                <div class="text-xl font-bold"><span id="winRate">0</span>%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions Card -->
+                    <div class="card-dark p-4 rounded-lg">
+                        <h3 class="text-lg font-bold text-yellow-500 mb-3">
+                            <i class="fas fa-bolt mr-2"></i>Quick Actions
+                        </h3>
+                        
+                        <div class="space-y-2">
+                            <button id="startGodBtn" onclick="toggleGodStatus()" disabled class="w-full py-3 rounded-lg gold-gradient text-gray-900 font-semibold hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                                <i class="fas fa-play mr-2"></i>Start God
+                            </button>
+                            
+                            <button onclick="location.href='/arena/positions'" class="w-full py-2 rounded-lg border border-yellow-500 hover:bg-yellow-500 hover:text-gray-900 transition">
+                                <i class="fas fa-list mr-2"></i>View All Positions
+                            </button>
+                            
+                            <button onclick="location.href='/arena/performance'" class="w-full py-2 rounded-lg border border-yellow-500 hover:bg-yellow-500 hover:text-gray-900 transition">
+                                <i class="fas fa-chart-bar mr-2"></i>Performance Report
+                            </button>
+                            
+                            <button onclick="emergencyStopAll()" class="w-full py-2 rounded-lg border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition">
+                                <i class="fas fa-stop-circle mr-2"></i>Emergency Stop
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Trading Pairs Card -->
+                    <div class="card-dark p-4 rounded-lg">
+                        <h3 class="text-lg font-bold text-yellow-500 mb-3">
+                            <i class="fas fa-coins mr-2"></i>Active Pairs
+                        </h3>
+                        <div id="tradingPairs" class="flex flex-wrap gap-2">
+                            <span class="text-gray-500 text-sm">No pairs selected</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedGodId = null;
+        let godsData = [];
+        let refreshInterval = null;
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadGodsData();
+            // Auto-refresh every 30 seconds
+            refreshInterval = setInterval(loadGodsData, 30000);
+        });
+
+        async function loadGodsData() {
+            try {
+                const token = localStorage.getItem('access_token');
+                if (!token) {
+                    window.location.href = '/arena/login';
+                    return;
+                }
+
+                const response = await fetch('/api/arena/gods/status', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.status === 401) {
+                    // Token expired, try refresh
+                    const refreshed = await refreshAccessToken();
+                    if (!refreshed) {
+                        window.location.href = '/arena/login';
+                        return;
+                    }
+                    return loadGodsData(); // Retry
+                }
+
+                const data = await response.json();
+                
+                if (data.gods && data.gods.length > 0) {
+                    godsData = data.gods;
+                    renderGodsList();
+                    updateQuickStats();
+                    
+                    // Auto-select first god if none selected
+                    if (!selectedGodId && godsData.length > 0) {
+                        selectGod(godsData[0].id);
+                    } else if (selectedGodId) {
+                        loadRegimeMatrix(selectedGodId);
+                    }
+                } else {
+                    // No gods found - redirect to onboarding
+                    window.location.href = '/arena/onboarding';
+                }
+
+                updateLastUpdateTime();
+            } catch (error) {
+                console.error('Error loading gods:', error);
+                showToast('Failed to load gods data', 'error');
+            }
+        }
+
+        function renderGodsList() {
+            const container = document.getElementById('godsList');
+            
+            container.innerHTML = godsData.map(god => {
+                const pnl = (god.realized_pnl || 0) + (god.unrealized_pnl || 0);
+                const pnlClass = pnl >= 0 ? 'pnl-positive' : 'pnl-negative';
+                const statusClass = `status-${god.status}`;
+                const isSelected = selectedGodId === god.id;
+                
+                return `
+                    <div onclick="selectGod('${god.id}')" class="god-card card-dark p-3 rounded-lg ${isSelected ? 'selected' : ''}">
+                        <div class="flex items-center space-x-3 mb-2">
+                            <div class="text-3xl">${god.avatar || '⚡'}</div>
+                            <div class="flex-1">
+                                <div class="font-semibold text-white">${god.name}</div>
+                                <div class="text-xs ${statusClass}">
+                                    <i class="fas fa-circle text-xs mr-1"></i>${god.status.toUpperCase()}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <div>
+                                <div class="text-gray-400">Capital</div>
+                                <div class="font-semibold">$${god.capital_balance.toFixed(2)}</div>
+                            </div>
+                            <div>
+                                <div class="text-gray-400">P&L</div>
+                                <div class="font-semibold ${pnlClass}">$${pnl.toFixed(2)}</div>
+                            </div>
+                        </div>
+                        <div class="mt-2 text-xs text-gray-400">
+                            <i class="fas fa-chart-line mr-1"></i>${god.active_positions} active positions
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectGod(godId) {
+            selectedGodId = godId;
+            renderGodsList(); // Re-render to show selection
+            loadRegimeMatrix(godId);
+            updateSelectedGodActions(godId);
+        }
+
+        async function loadRegimeMatrix(godId) {
+            const god = godsData.find(g => g.id === godId);
+            if (!god) return;
+
+            // Update trading pairs display
+            const pairsContainer = document.getElementById('tradingPairs');
+            if (god.trading_pairs && god.trading_pairs.length > 0) {
+                pairsContainer.innerHTML = god.trading_pairs.map(pair => 
+                    `<span class="px-2 py-1 rounded text-xs bg-yellow-500 bg-opacity-20 text-yellow-500 border border-yellow-500">${pair}</span>`
+                ).join('');
+            }
+
+            // Load regimes and strategists for this god
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch(`/api/arena/gods/${godId}/regimes`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+                
+                const matrixContainer = document.getElementById('regimeMatrix');
+                
+                if (data.regimes && data.regimes.length > 0) {
+                    matrixContainer.innerHTML = `
+                        <div class="space-y-4">
+                            ${data.regimes.map(regime => `
+                                <div class="border border-gray-700 rounded-lg p-4">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <div>
+                                            <h4 class="font-semibold text-white">${regime.name}</h4>
+                                            <p class="text-xs text-gray-400 mt-1">${regime.description || ''}</p>
+                                        </div>
+                                        <span class="px-2 py-1 rounded text-xs ${regime.is_active ? 'bg-green-500 bg-opacity-20 text-green-500' : 'bg-gray-500 bg-opacity-20 text-gray-500'}">
+                                            ${regime.is_active ? 'ACTIVE' : 'INACTIVE'}
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="grid grid-cols-2 gap-2">
+                                        ${regime.strategists && regime.strategists.length > 0 ? regime.strategists.map(strat => `
+                                            <div class="regime-cell border border-gray-700 rounded p-2">
+                                                <div class="flex items-center space-x-2 mb-1">
+                                                    <span class="text-lg">${strat.avatar || '🎯'}</span>
+                                                    <div class="flex-1">
+                                                        <div class="text-xs font-semibold text-white">${strat.name}</div>
+                                                        <div class="text-xs text-gray-400">${strat.risk_level || 'medium'}</div>
+                                                    </div>
+                                                </div>
+                                                <div class="flex justify-between text-xs mt-2">
+                                                    <span class="text-gray-400">Win: ${strat.winning_trades || 0}</span>
+                                                    <span class="text-gray-400">Loss: ${strat.losing_trades || 0}</span>
+                                                </div>
+                                            </div>
+                                        `).join('') : '<div class="col-span-2 text-center text-gray-500 text-sm py-4">No strategists</div>'}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                } else {
+                    matrixContainer.innerHTML = `
+                        <div class="text-center text-gray-500 py-8">
+                            <i class="fas fa-chess-board text-4xl mb-3 opacity-50"></i>
+                            <p>No regimes configured for this God</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading regime matrix:', error);
+            }
+        }
+
+        function updateSelectedGodActions(godId) {
+            const god = godsData.find(g => g.id === godId);
+            if (!god) return;
+
+            const startBtn = document.getElementById('startGodBtn');
+            startBtn.disabled = false;
+            
+            if (god.status === 'active') {
+                startBtn.innerHTML = '<i class="fas fa-pause mr-2"></i>Pause God';
+                startBtn.classList.remove('gold-gradient');
+                startBtn.classList.add('bg-gray-600');
+            } else {
+                startBtn.innerHTML = '<i class="fas fa-play mr-2"></i>Start God';
+                startBtn.classList.add('gold-gradient');
+                startBtn.classList.remove('bg-gray-600');
+            }
+        }
+
+        function updateQuickStats() {
+            let totalCapital = 0;
+            let totalPnl = 0;
+            let totalPositions = 0;
+            let totalWins = 0;
+            let totalLosses = 0;
+
+            godsData.forEach(god => {
+                totalCapital += god.capital_balance || 0;
+                totalPnl += (god.realized_pnl || 0) + (god.unrealized_pnl || 0);
+                totalPositions += god.active_positions || 0;
+                totalWins += god.winning_trades || 0;
+                totalLosses += god.losing_trades || 0;
+            });
+
+            document.getElementById('totalCapital').textContent = totalCapital.toFixed(2);
+            
+            const pnlElement = document.getElementById('totalPnl');
+            pnlElement.textContent = `$${totalPnl.toFixed(2)}`;
+            pnlElement.className = `text-xl font-bold ${totalPnl >= 0 ? 'pnl-positive' : 'pnl-negative'}`;
+            
+            document.getElementById('activePositions').textContent = totalPositions;
+            
+            const totalTrades = totalWins + totalLosses;
+            const winRate = totalTrades > 0 ? (totalWins / totalTrades * 100).toFixed(1) : 0;
+            document.getElementById('winRate').textContent = winRate;
+        }
+
+        async function toggleGodStatus() {
+            if (!selectedGodId) return;
+
+            const god = godsData.find(g => g.id === selectedGodId);
+            const newStatus = god.status === 'active' ? 'paused' : 'active';
+
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch(`/api/arena/gods/${selectedGodId}/status`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast(`God ${newStatus === 'active' ? 'started' : 'paused'} successfully`, 'success');
+                    loadGodsData(); // Refresh
+                } else {
+                    showToast(data.error || 'Failed to update God status', 'error');
+                }
+            } catch (error) {
+                console.error('Error toggling god status:', error);
+                showToast('Failed to update God status', 'error');
+            }
+        }
+
+        async function emergencyStopAll() {
+            if (!confirm('⚠️ This will pause all active Gods and close all open positions. Continue?')) {
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch('/api/arena/gods/emergency-stop', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('Emergency stop activated - all Gods paused', 'success');
+                    loadGodsData();
+                } else {
+                    showToast(data.error || 'Emergency stop failed', 'error');
+                }
+            } catch (error) {
+                console.error('Error during emergency stop:', error);
+                showToast('Emergency stop failed', 'error');
+            }
+        }
+
+        function refreshData() {
+            loadGodsData();
+            showToast('Data refreshed', 'success');
+        }
+
+        function updateLastUpdateTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('lastUpdate').textContent = timeStr;
+        }
+
+        async function refreshAccessToken() {
+            try {
+                const refreshToken = localStorage.getItem('refresh_token');
+                if (!refreshToken) return false;
+
+                const response = await fetch('/api/arena/auth/refresh', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ refresh_token: refreshToken })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    localStorage.setItem('access_token', data.access_token);
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                return false;
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+        });
+    </script>
+</body>
+</html>

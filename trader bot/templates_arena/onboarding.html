@@ -1,0 +1,708 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to SmartPal Arena{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-4xl">
+        
+        <!-- Progress Bar -->
+        <div class="mb-8">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-sm text-gray-400">Step <span id="currentStep">1</span> of 4</span>
+                <span class="text-sm text-arena-gold">Setup Progress</span>
+            </div>
+            <div class="w-full bg-gray-800 rounded-full h-2">
+                <div id="progressBar" class="bg-gradient-to-r from-arena-gold to-yellow-500 h-2 rounded-full transition-all duration-300" style="width: 25%"></div>
+            </div>
+        </div>
+
+        <!-- Step 1: Welcome -->
+        <div id="step1" class="step-container arena-card rounded-xl p-8">
+            <div class="text-center mb-8">
+                <div class="text-6xl mb-4">⚔️</div>
+                <h1 class="text-4xl font-display font-bold text-gold-gradient mb-4">
+                    Welcome to the Arena
+                </h1>
+                <p class="text-xl text-gray-300 mb-2">Sparta Tier - Free Training Grounds</p>
+                <p class="text-gray-400 max-w-2xl mx-auto">
+                    Begin your journey with paper trading and AI-powered strategy development.
+                    Master the basics before ascending to higher tiers.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6 mb-8">
+                <div class="text-center p-6 bg-gradient-to-b from-arena-gold/10 to-transparent rounded-lg border border-arena-gold/20">
+                    <div class="text-3xl mb-3">🏛️</div>
+                    <h3 class="text-lg font-semibold text-arena-gold mb-2">1 God</h3>
+                    <p class="text-sm text-gray-400">Create your first AI trading entity</p>
+                </div>
+
+                <div class="text-center p-6 bg-gradient-to-b from-purple-500/10 to-transparent rounded-lg border border-purple-500/20">
+                    <div class="text-3xl mb-3">🌊</div>
+                    <h3 class="text-lg font-semibold text-purple-400 mb-2">1 Regime</h3>
+                    <p class="text-sm text-gray-400">Market condition detector</p>
+                </div>
+
+                <div class="text-center p-6 bg-gradient-to-b from-blue-500/10 to-transparent rounded-lg border border-blue-500/20">
+                    <div class="text-3xl mb-3">🧠</div>
+                    <h3 class="text-lg font-semibold text-blue-400 mb-2">2 Strategists</h3>
+                    <p class="text-sm text-gray-400">AI trading personalities</p>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-r from-arena-gold/5 to-transparent border-l-4 border-arena-gold p-6 rounded-lg mb-8">
+                <div class="flex items-start gap-4">
+                    <div class="text-2xl">💰</div>
+                    <div>
+                        <h4 class="text-lg font-semibold text-arena-gold mb-2">$1,000 Training Capital</h4>
+                        <p class="text-gray-300 text-sm">
+                            Practice risk-free with paper trading. All market data is real-time,
+                            but no real money is at risk. Perfect your strategies before going live.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="nextStep()" class="btn-arena w-full py-4 text-lg">
+                Begin Setup →
+            </button>
+        </div>
+
+        <!-- Step 2: Create First God -->
+        <div id="step2" class="step-container arena-card rounded-xl p-8 hidden">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-display font-bold text-gold-gradient mb-2">
+                    Choose Your God
+                </h2>
+                <p class="text-gray-400">Select a preset God archetype to start your journey</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+                <div class="god-preset-card cursor-pointer p-6 rounded-lg border-2 border-transparent hover:border-arena-gold transition-all" 
+                     data-god="zeus" onclick="selectGod('zeus')">
+                    <div class="text-center">
+                        <div class="text-5xl mb-3">⚡</div>
+                        <h3 class="text-lg font-semibold text-arena-gold mb-1">Zeus</h3>
+                        <p class="text-xs text-gray-400 mb-2">King of Gods</p>
+                        <div class="text-xs px-2 py-1 bg-green-500/20 text-green-400 rounded inline-block">
+                            Conservative
+                        </div>
+                    </div>
+                </div>
+
+                <div class="god-preset-card cursor-pointer p-6 rounded-lg border-2 border-transparent hover:border-arena-gold transition-all" 
+                     data-god="athena" onclick="selectGod('athena')">
+                    <div class="text-center">
+                        <div class="text-5xl mb-3">🦉</div>
+                        <h3 class="text-lg font-semibold text-purple-400 mb-1">Athena</h3>
+                        <p class="text-xs text-gray-400 mb-2">Wisdom & Strategy</p>
+                        <div class="text-xs px-2 py-1 bg-blue-500/20 text-blue-400 rounded inline-block">
+                            Balanced
+                        </div>
+                    </div>
+                </div>
+
+                <div class="god-preset-card cursor-pointer p-6 rounded-lg border-2 border-transparent hover:border-arena-gold transition-all" 
+                     data-god="poseidon" onclick="selectGod('poseidon')">
+                    <div class="text-center">
+                        <div class="text-5xl mb-3">🌊</div>
+                        <h3 class="text-lg font-semibold text-blue-400 mb-1">Poseidon</h3>
+                        <p class="text-xs text-gray-400 mb-2">Sea of Volatility</p>
+                        <div class="text-xs px-2 py-1 bg-yellow-500/20 text-yellow-400 rounded inline-block">
+                            Moderate
+                        </div>
+                    </div>
+                </div>
+
+                <div class="god-preset-card cursor-pointer p-6 rounded-lg border-2 border-transparent hover:border-arena-gold transition-all" 
+                     data-god="ares" onclick="selectGod('ares')">
+                    <div class="text-center">
+                        <div class="text-5xl mb-3">⚔️</div>
+                        <h3 class="text-lg font-semibold text-red-400 mb-1">Ares</h3>
+                        <p class="text-xs text-gray-400 mb-2">God of War</p>
+                        <div class="text-xs px-2 py-1 bg-orange-500/20 text-orange-400 rounded inline-block">
+                            Aggressive
+                        </div>
+                    </div>
+                </div>
+
+                <div class="god-preset-card cursor-pointer p-6 rounded-lg border-2 border-transparent hover:border-arena-gold transition-all" 
+                     data-god="hephaestus" onclick="selectGod('hephaestus')">
+                    <div class="text-center">
+                        <div class="text-5xl mb-3">🔥</div>
+                        <h3 class="text-lg font-semibold text-orange-400 mb-1">Hephaestus</h3>
+                        <p class="text-xs text-gray-400 mb-2">Master Craftsman</p>
+                        <div class="text-xs px-2 py-1 bg-purple-500/20 text-purple-400 rounded inline-block">
+                            Technical
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="godDetails" class="bg-gradient-to-r from-arena-gold/5 to-transparent border-l-4 border-arena-gold p-6 rounded-lg mb-6 hidden">
+                <div class="flex items-start gap-4">
+                    <div id="godAvatar" class="text-4xl"></div>
+                    <div class="flex-1">
+                        <h4 id="godName" class="text-xl font-semibold text-arena-gold mb-2"></h4>
+                        <p id="godDescription" class="text-gray-300 text-sm mb-3"></p>
+                        <div class="flex gap-4 text-sm">
+                            <div>
+                                <span class="text-gray-400">Risk:</span>
+                                <span id="godRisk" class="text-arena-gold ml-1"></span>
+                            </div>
+                            <div>
+                                <span class="text-gray-400">Focus:</span>
+                                <span id="godFocus" class="text-arena-gold ml-1"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-4">
+                <button onclick="prevStep()" class="btn-secondary flex-1 py-3">
+                    ← Back
+                </button>
+                <button id="nextStep2" onclick="nextStep()" class="btn-arena flex-1 py-3" disabled>
+                    Continue →
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 3: Trading Pairs Selection -->
+        <div id="step3" class="step-container arena-card rounded-xl p-8 hidden">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-display font-bold text-gold-gradient mb-2">
+                    Select Trading Pairs
+                </h2>
+                <p class="text-gray-400">Choose which cryptocurrency pairs your God will trade</p>
+            </div>
+
+            <div class="flex gap-3 mb-6 flex-wrap">
+                <button onclick="selectPresetPairs('top10')" class="px-4 py-2 bg-arena-gold/10 hover:bg-arena-gold/20 rounded-lg border border-arena-gold/30 text-sm transition-all">
+                    Top 10 by Volume
+                </button>
+                <button onclick="selectPresetPairs('majors')" class="px-4 py-2 bg-blue-500/10 hover:bg-blue-500/20 rounded-lg border border-blue-500/30 text-sm transition-all">
+                    Major Pairs Only
+                </button>
+                <button onclick="selectPresetPairs('all')" class="px-4 py-2 bg-purple-500/10 hover:bg-purple-500/20 rounded-lg border border-purple-500/30 text-sm transition-all">
+                    Select All
+                </button>
+                <button onclick="deselectAllPairs()" class="px-4 py-2 bg-gray-700/50 hover:bg-gray-700 rounded-lg border border-gray-600 text-sm transition-all">
+                    Clear All
+                </button>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6 max-h-96 overflow-y-auto p-2">
+                <label class="pair-checkbox flex items-center gap-3 p-4 rounded-lg border border-gray-700 hover:border-arena-gold/50 cursor-pointer transition-all">
+                    <input type="checkbox" value="BTC/USDT" checked class="trading-pair-cb w-4 h-4">
+                    <div class="flex-1">
+                        <div class="font-semibold text-arena-gold">BTC</div>
+                        <div class="text-xs text-gray-400">Bitcoin</div>
+                    </div>
+                </label>
+
+                <label class="pair-checkbox flex items-center gap-3 p-4 rounded-lg border border-gray-700 hover:border-arena-gold/50 cursor-pointer transition-all">
+                    <input type="checkbox" value="ETH/USDT" checked class="trading-pair-cb w-4 h-4">
+                    <div class="flex-1">
+                        <div class="font-semibold text-blue-400">ETH</div>
+                        <div class="text-xs text-gray-400">Ethereum</div>
+                    </div>
+                </label>
+
+                <label class="pair-checkbox flex items-center gap-3 p-4 rounded-lg border border-gray-700 hover:border-arena-gold/50 cursor-pointer transition-all">
+                    <input type="checkbox" value="BNB/USDT" checked class="trading-pair-cb w-4 h-4">
+                    <div class="flex-1">
+                        <div class="font-semibold text-yellow-400">BNB</div>
+                        <div class="text-xs text-gray-400">Binance Coin</div>
+                    </div>
+                </label>
+
+                <label class="pair-checkbox flex items-center gap-3 p-4 rounded-lg border border-gray-700 hover:border-arena-gold/50 cursor-pointer transition-all">
+                    <input type="checkbox" value="SOL/USDT" class="trading-pair-cb w-4 h-4">
+                    <div class="flex-1">
+                        <div class="font-semibold text-purple-400">SOL</div>
+                        <div class="text-xs text-gray-400">Solana</div>
+                    </div>
+                </label>
+
+                <label class="pair-checkbox flex items-center gap-3 p-4 rounded-lg border border-gray-700 hover:border-arena-gold/50 cursor-pointer transition-all">
+                    <input type="checkbox" value="XRP/USDT" class="trading-pair-cb w-4 h-4">
+                    <div class="flex-1">
+                        <div class="font-semibold text-blue-300">XRP</div>
+                        <div class="text-xs text-gray-400">Ripple</div>
+                    </div>
+                </label>
+
+                <label class="pair-checkbox flex items-center gap-3 p-4 rounded-lg border border-gray-700 hover:border-arena-gold/50 cursor-pointer transition-all">
+                    <input type="checkbox" value="ADA/USDT" class="trading-pair-cb w-4 h-4">
+                    <div class="flex-1">
+                        <div class="font-semibold text-blue-500">ADA</div>
+                        <div class="text-xs text-gray-400">Cardano</div>
+                    </div>
+                </label>
+
+                <label class="pair-checkbox flex items-center gap-3 p-4 rounded-lg border border-gray-700 hover:border-arena-gold/50 cursor-pointer transition-all">
+                    <input type="checkbox" value="DOGE/USDT" class="trading-pair-cb w-4 h-4">
+                    <div class="flex-1">
+                        <div class="font-semibold text-yellow-300">DOGE</div>
+                        <div class="text-xs text-gray-400">Dogecoin</div>
+                    </div>
+                </label>
+
+                <label class="pair-checkbox flex items-center gap-3 p-4 rounded-lg border border-gray-700 hover:border-arena-gold/50 cursor-pointer transition-all">
+                    <input type="checkbox" value="MATIC/USDT" class="trading-pair-cb w-4 h-4">
+                    <div class="flex-1">
+                        <div class="font-semibold text-purple-500">MATIC</div>
+                        <div class="text-xs text-gray-400">Polygon</div>
+                    </div>
+                </label>
+
+                <label class="pair-checkbox flex items-center gap-3 p-4 rounded-lg border border-gray-700 hover:border-arena-gold/50 cursor-pointer transition-all">
+                    <input type="checkbox" value="DOT/USDT" class="trading-pair-cb w-4 h-4">
+                    <div class="flex-1">
+                        <div class="font-semibold text-pink-400">DOT</div>
+                        <div class="text-xs text-gray-400">Polkadot</div>
+                    </div>
+                </label>
+
+                <label class="pair-checkbox flex items-center gap-3 p-4 rounded-lg border border-gray-700 hover:border-arena-gold/50 cursor-pointer transition-all">
+                    <input type="checkbox" value="AVAX/USDT" class="trading-pair-cb w-4 h-4">
+                    <div class="flex-1">
+                        <div class="font-semibold text-red-400">AVAX</div>
+                        <div class="text-xs text-gray-400">Avalanche</div>
+                    </div>
+                </label>
+
+                <label class="pair-checkbox flex items-center gap-3 p-4 rounded-lg border border-gray-700 hover:border-arena-gold/50 cursor-pointer transition-all">
+                    <input type="checkbox" value="LINK/USDT" class="trading-pair-cb w-4 h-4">
+                    <div class="flex-1">
+                        <div class="font-semibold text-blue-600">LINK</div>
+                        <div class="text-xs text-gray-400">Chainlink</div>
+                    </div>
+                </label>
+
+                <label class="pair-checkbox flex items-center gap-3 p-4 rounded-lg border border-gray-700 hover:border-arena-gold/50 cursor-pointer transition-all">
+                    <input type="checkbox" value="UNI/USDT" class="trading-pair-cb w-4 h-4">
+                    <div class="flex-1">
+                        <div class="font-semibold text-pink-500">UNI</div>
+                        <div class="text-xs text-gray-400">Uniswap</div>
+                    </div>
+                </label>
+
+                <label class="pair-checkbox flex items-center gap-3 p-4 rounded-lg border border-gray-700 hover:border-arena-gold/50 cursor-pointer transition-all">
+                    <input type="checkbox" value="ATOM/USDT" class="trading-pair-cb w-4 h-4">
+                    <div class="flex-1">
+                        <div class="font-semibold text-indigo-400">ATOM</div>
+                        <div class="text-xs text-gray-400">Cosmos</div>
+                    </div>
+                </label>
+
+                <label class="pair-checkbox flex items-center gap-3 p-4 rounded-lg border border-gray-700 hover:border-arena-gold/50 cursor-pointer transition-all">
+                    <input type="checkbox" value="LTC/USDT" class="trading-pair-cb w-4 h-4">
+                    <div class="flex-1">
+                        <div class="font-semibold text-gray-400">LTC</div>
+                        <div class="text-xs text-gray-400">Litecoin</div>
+                    </div>
+                </label>
+
+                <label class="pair-checkbox flex items-center gap-3 p-4 rounded-lg border border-gray-700 hover:border-arena-gold/50 cursor-pointer transition-all">
+                    <input type="checkbox" value="TRX/USDT" class="trading-pair-cb w-4 h-4">
+                    <div class="flex-1">
+                        <div class="font-semibold text-red-500">TRX</div>
+                        <div class="text-xs text-gray-400">TRON</div>
+                    </div>
+                </label>
+
+                <label class="pair-checkbox flex items-center gap-3 p-4 rounded-lg border border-gray-700 hover:border-arena-gold/50 cursor-pointer transition-all">
+                    <input type="checkbox" value="NEAR/USDT" class="trading-pair-cb w-4 h-4">
+                    <div class="flex-1">
+                        <div class="font-semibold text-green-400">NEAR</div>
+                        <div class="text-xs text-gray-400">NEAR Protocol</div>
+                    </div>
+                </label>
+
+                <label class="pair-checkbox flex items-center gap-3 p-4 rounded-lg border border-gray-700 hover:border-arena-gold/50 cursor-pointer transition-all">
+                    <input type="checkbox" value="XLM/USDT" class="trading-pair-cb w-4 h-4">
+                    <div class="flex-1">
+                        <div class="font-semibold text-cyan-400">XLM</div>
+                        <div class="text-xs text-gray-400">Stellar</div>
+                    </div>
+                </label>
+
+                <label class="pair-checkbox flex items-center gap-3 p-4 rounded-lg border border-gray-700 hover:border-arena-gold/50 cursor-pointer transition-all">
+                    <input type="checkbox" value="ARB/USDT" class="trading-pair-cb w-4 h-4">
+                    <div class="flex-1">
+                        <div class="font-semibold text-blue-400">ARB</div>
+                        <div class="text-xs text-gray-400">Arbitrum</div>
+                    </div>
+                </label>
+
+                <label class="pair-checkbox flex items-center gap-3 p-4 rounded-lg border border-gray-700 hover:border-arena-gold/50 cursor-pointer transition-all">
+                    <input type="checkbox" value="SHIB/USDT" class="trading-pair-cb w-4 h-4">
+                    <div class="flex-1">
+                        <div class="font-semibold text-orange-400">SHIB</div>
+                        <div class="text-xs text-gray-400">Shiba Inu</div>
+                    </div>
+                </label>
+
+                <label class="pair-checkbox flex items-center gap-3 p-4 rounded-lg border border-gray-700 hover:border-arena-gold/50 cursor-pointer transition-all">
+                    <input type="checkbox" value="APT/USDT" class="trading-pair-cb w-4 h-4">
+                    <div class="flex-1">
+                        <div class="font-semibold text-teal-400">APT</div>
+                        <div class="text-xs text-gray-400">Aptos</div>
+                    </div>
+                </label>
+            </div>
+
+            <div class="mb-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                <div class="flex items-center gap-3">
+                    <div class="text-2xl">ℹ️</div>
+                    <div class="text-sm text-gray-300">
+                        <strong class="text-blue-400">Selected: <span id="pairCount">3</span> pairs</strong>
+                        <br>More pairs = more opportunities but higher computational costs
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-4">
+                <button onclick="prevStep()" class="btn-secondary flex-1 py-3">
+                    ← Back
+                </button>
+                <button id="nextStep3" onclick="nextStep()" class="btn-arena flex-1 py-3">
+                    Continue →
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 4: Basic Settings -->
+        <div id="step4" class="step-container arena-card rounded-xl p-8 hidden">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-display font-bold text-gold-gradient mb-2">
+                    Configure Settings
+                </h2>
+                <p class="text-gray-400">Set your initial trading parameters</p>
+            </div>
+
+            <div class="space-y-6 mb-8">
+                <div class="p-6 bg-gradient-to-r from-green-500/10 to-transparent border-l-4 border-green-500 rounded-lg">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center gap-3">
+                            <div class="text-2xl">🎓</div>
+                            <div>
+                                <h4 class="text-lg font-semibold text-green-400">Paper Trading Mode</h4>
+                                <p class="text-sm text-gray-400">Risk-free practice with simulated capital</p>
+                            </div>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="paperTradingToggle" checked disabled class="sr-only peer">
+                            <div class="w-14 h-7 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-green-500"></div>
+                        </label>
+                    </div>
+                    <div class="text-xs text-gray-500 ml-11">
+                        ⚠️ Paper trading required for Sparta tier
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                        <span class="flex items-center gap-2">
+                            <span>💰</span>
+                            Initial Capital (USDT)
+                        </span>
+                    </label>
+                    <input type="number" id="initialCapital" value="1000" readonly
+                           class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white">
+                    <p class="text-xs text-gray-500 mt-1">Fixed at $1,000 for Sparta tier</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                        <span class="flex items-center gap-2">
+                            <span>⚖️</span>
+                            Leverage: <span id="leverageValue" class="text-arena-gold">50</span>x
+                        </span>
+                    </label>
+                    <input type="range" id="leverageSlider" min="1" max="100" value="50"
+                           class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                           oninput="updateLeverageDisplay(this.value)">
+                    <div class="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>1x</span>
+                        <span>25x</span>
+                        <span>50x</span>
+                        <span>100x</span>
+                    </div>
+                    <div class="mt-2 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded">
+                        <p class="text-xs text-yellow-400">
+                            ⚠️ Higher leverage = Higher risk. Start conservative until familiar with system.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="p-6 bg-gradient-to-r from-purple-500/10 to-transparent border-l-4 border-purple-500 rounded-lg">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center gap-3">
+                            <div class="text-2xl">🤖</div>
+                            <div>
+                                <h4 class="text-lg font-semibold text-purple-400">Dual-AI Validation</h4>
+                                <p class="text-sm text-gray-400">XAI Grok + ChatGPT veto power</p>
+                            </div>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="chatgptValidation" checked class="sr-only peer">
+                            <div class="w-14 h-7 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-purple-500"></div>
+                        </label>
+                    </div>
+                    <div class="text-xs text-gray-400 ml-11">
+                        Recommended: Reduces false signals by 40%
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-4">
+                <button onclick="prevStep()" class="btn-secondary flex-1 py-3">
+                    ← Back
+                </button>
+                <button id="completeOnboarding" onclick="completeOnboarding()" class="btn-arena flex-1 py-3">
+                    <span id="completeText">Launch Arena →</span>
+                    <span id="completeSpinner" class="hidden">
+                        <i class="fas fa-spinner fa-spin mr-2"></i>Creating...
+                    </span>
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="toast" class="fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg hidden z-50">
+    <span id="toastMessage"></span>
+</div>
+
+<script>
+let currentStep = 1;
+let selectedGod = null;
+let selectedPairs = ['BTC/USDT', 'ETH/USDT', 'BNB/USDT'];
+
+const godPresets = {
+    zeus: {
+        name: 'Zeus',
+        avatar: '⚡',
+        description: 'Supreme ruler with balanced approach. Focuses on major pairs with conservative risk management. Perfect for beginners.',
+        risk: 'Low',
+        focus: 'Trend Following',
+        spirit: 'King of Olympus - Disciplined and patient'
+    },
+    athena: {
+        name: 'Athena',
+        avatar: '🦉',
+        description: 'Goddess of wisdom and strategy. Analytical approach with emphasis on multiple timeframes and indicator confluence.',
+        risk: 'Medium',
+        focus: 'Multi-Timeframe',
+        spirit: 'Strategic Wisdom - Data-driven decisions'
+    },
+    poseidon: {
+        name: 'Poseidon',
+        avatar: '🌊',
+        description: 'Master of volatile markets. Thrives in high-movement conditions with dynamic position sizing.',
+        risk: 'Medium-High',
+        focus: 'Volatility Trading',
+        spirit: 'Sea God - Adaptive to changing tides'
+    },
+    ares: {
+        name: 'Ares',
+        avatar: '⚔️',
+        description: 'Aggressive warrior. High-frequency trading with momentum-based entries. For experienced traders.',
+        risk: 'High',
+        focus: 'Momentum Breakout',
+        spirit: 'God of War - Bold and decisive'
+    },
+    hephaestus: {
+        name: 'Hephaestus',
+        avatar: '🔥',
+        description: 'Master craftsman. Technical precision with complex indicator combinations and pattern recognition.',
+        risk: 'Medium',
+        focus: 'Technical Analysis',
+        spirit: 'Divine Smith - Precision and craft'
+    }
+};
+
+function nextStep() {
+    if (currentStep === 2 && !selectedGod) {
+        showToast('Please select a God archetype', 'error');
+        return;
+    }
+    
+    if (currentStep === 3) {
+        const checkedPairs = document.querySelectorAll('.trading-pair-cb:checked');
+        if (checkedPairs.length === 0) {
+            showToast('Please select at least one trading pair', 'error');
+            return;
+        }
+        selectedPairs = Array.from(checkedPairs).map(cb => cb.value);
+    }
+    
+    document.getElementById(`step${currentStep}`).classList.add('hidden');
+    currentStep++;
+    document.getElementById(`step${currentStep}`).classList.remove('hidden');
+    
+    updateProgress();
+}
+
+function prevStep() {
+    document.getElementById(`step${currentStep}`).classList.add('hidden');
+    currentStep--;
+    document.getElementById(`step${currentStep}`).classList.remove('hidden');
+    
+    updateProgress();
+}
+
+function updateProgress() {
+    document.getElementById('currentStep').textContent = currentStep;
+    document.getElementById('progressBar').style.width = `${(currentStep / 4) * 100}%`;
+}
+
+function selectGod(godId) {
+    selectedGod = godId;
+    
+    document.querySelectorAll('.god-preset-card').forEach(card => {
+        card.classList.remove('border-arena-gold', 'bg-arena-gold/10');
+        card.classList.add('border-transparent');
+    });
+    
+    const selectedCard = document.querySelector(`[data-god="${godId}"]`);
+    selectedCard.classList.add('border-arena-gold', 'bg-arena-gold/10');
+    selectedCard.classList.remove('border-transparent');
+    
+    const god = godPresets[godId];
+    document.getElementById('godAvatar').textContent = god.avatar;
+    document.getElementById('godName').textContent = god.name;
+    document.getElementById('godDescription').textContent = god.description;
+    document.getElementById('godRisk').textContent = god.risk;
+    document.getElementById('godFocus').textContent = god.focus;
+    document.getElementById('godDetails').classList.remove('hidden');
+    
+    document.getElementById('nextStep2').disabled = false;
+}
+
+function selectPresetPairs(preset) {
+    const checkboxes = document.querySelectorAll('.trading-pair-cb');
+    
+    switch(preset) {
+        case 'top10':
+            deselectAllPairs();
+            ['BTC/USDT', 'ETH/USDT', 'BNB/USDT', 'SOL/USDT', 'XRP/USDT', 
+             'ADA/USDT', 'DOGE/USDT', 'MATIC/USDT', 'DOT/USDT', 'AVAX/USDT'].forEach(pair => {
+                const cb = document.querySelector(`.trading-pair-cb[value="${pair}"]`);
+                if (cb) cb.checked = true;
+            });
+            break;
+        case 'majors':
+            deselectAllPairs();
+            ['BTC/USDT', 'ETH/USDT', 'BNB/USDT'].forEach(pair => {
+                const cb = document.querySelector(`.trading-pair-cb[value="${pair}"]`);
+                if (cb) cb.checked = true;
+            });
+            break;
+        case 'all':
+            checkboxes.forEach(cb => cb.checked = true);
+            break;
+    }
+    
+    updatePairCount();
+}
+
+function deselectAllPairs() {
+    document.querySelectorAll('.trading-pair-cb').forEach(cb => cb.checked = false);
+    updatePairCount();
+}
+
+function updatePairCount() {
+    const count = document.querySelectorAll('.trading-pair-cb:checked').length;
+    document.getElementById('pairCount').textContent = count;
+}
+
+function updateLeverageDisplay(value) {
+    document.getElementById('leverageValue').textContent = value;
+}
+
+async function completeOnboarding() {
+    const button = document.getElementById('completeOnboarding');
+    const textSpan = document.getElementById('completeText');
+    const spinnerSpan = document.getElementById('completeSpinner');
+    
+    button.disabled = true;
+    textSpan.classList.add('hidden');
+    spinnerSpan.classList.remove('hidden');
+    
+    try {
+        const token = localStorage.getItem('arena_token');
+        if (!token) {
+            window.location.href = '/arena/login';
+            return;
+        }
+        
+        const onboardingData = {
+            god_preset: selectedGod,
+            trading_pairs: selectedPairs,
+            initial_capital: parseFloat(document.getElementById('initialCapital').value),
+            leverage: parseInt(document.getElementById('leverageSlider').value),
+            paper_trading: document.getElementById('paperTradingToggle').checked,
+            chatgpt_validation: document.getElementById('chatgptValidation').checked
+        };
+        
+        const response = await fetch('/api/arena/onboarding/complete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(onboardingData)
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok && result.success) {
+            showToast('Arena setup complete! Redirecting...', 'success');
+            setTimeout(() => {
+                window.location.href = '/arena/god-control';
+            }, 1500);
+        } else {
+            showToast(result.error || 'Setup failed. Please try again.', 'error');
+            button.disabled = false;
+            textSpan.classList.remove('hidden');
+            spinnerSpan.classList.add('hidden');
+        }
+        
+    } catch (error) {
+        console.error('Onboarding error:', error);
+        showToast('Network error. Please check connection.', 'error');
+        button.disabled = false;
+        textSpan.classList.remove('hidden');
+        spinnerSpan.classList.add('hidden');
+    }
+}
+
+function showToast(message, type = 'error') {
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toastMessage');
+    
+    toastMessage.textContent = message;
+    toast.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 ${
+        type === 'success' ? 'bg-green-500' : 'bg-red-500'
+    } text-white`;
+    toast.classList.remove('hidden');
+    
+    setTimeout(() => {
+        toast.classList.add('hidden');
+    }, 3000);
+}
+
+document.querySelectorAll('.trading-pair-cb').forEach(cb => {
+    cb.addEventListener('change', updatePairCount);
+});
+
+updatePairCount();
+</script>
+{% endblock %}
