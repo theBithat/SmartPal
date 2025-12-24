@@ -260,7 +260,7 @@
 
         async function loadGodsData() {
             try {
-                const token = localStorage.getItem('access_token');
+                const token = localStorage.getItem('arena_token');
                 if (!token) {
                     window.location.href = '/arena/login';
                     return;
@@ -366,7 +366,7 @@
 
             // Load regimes and strategists for this god
             try {
-                const token = localStorage.getItem('access_token');
+                const token = localStorage.getItem('arena_token');
                 const response = await fetch(`/api/arena/gods/${godId}/regimes`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -479,7 +479,7 @@
             const newStatus = god.status === 'active' ? 'paused' : 'active';
 
             try {
-                const token = localStorage.getItem('access_token');
+                const token = localStorage.getItem('arena_token');
                 const response = await fetch(`/api/arena/gods/${selectedGodId}/status`, {
                     method: 'POST',
                     headers: {
@@ -509,7 +509,7 @@
             }
 
             try {
-                const token = localStorage.getItem('access_token');
+                const token = localStorage.getItem('arena_token');
                 const response = await fetch('/api/arena/gods/emergency-stop', {
                     method: 'POST',
                     headers: {
@@ -544,7 +544,7 @@
 
         async function refreshAccessToken() {
             try {
-                const refreshToken = localStorage.getItem('refresh_token');
+                const refreshToken = localStorage.getItem('arena_refresh');
                 if (!refreshToken) return false;
 
                 const response = await fetch('/api/arena/auth/refresh', {
@@ -557,7 +557,7 @@
 
                 if (response.ok) {
                     const data = await response.json();
-                    localStorage.setItem('access_token', data.access_token);
+                    localStorage.setItem('arena_token', data.access_token);
                     return true;
                 }
                 return false;
